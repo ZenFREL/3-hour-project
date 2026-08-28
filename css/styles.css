@@ -3,8 +3,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f4f7f6; /* Softer light gray */
-    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Card Enhancements */
@@ -27,7 +26,7 @@ body {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #6c757d;
+    color: var(--bs-secondary-color);
 }
 
 /* Sortable Headers */
@@ -37,7 +36,7 @@ th.sortable {
     transition: background-color 0.2s;
 }
 th.sortable:hover {
-    background-color: #e9ecef;
+    background-color: var(--bs-tertiary-bg);
 }
 .sort-icon {
     font-size: 0.8rem;
@@ -71,7 +70,7 @@ th.sort-desc .sort-icon::before {
     cursor: help;
 }
 
-/* Status Badges */
+/* --- LIGHT MODE SPECIFIC STATUS BADGES --- */
 .badge-active {
     background-color: #e6f4ea;
     color: #1e8e3e;
@@ -83,6 +82,21 @@ th.sort-desc .sort-icon::before {
     border: 1px solid #5f636840;
 }
 
+/* --- DARK MODE SPECIFIC STYLES --- */
+[data-bs-theme="dark"] .badge-active {
+    background-color: #1e4620; /* Darker green bg */
+    color: #81c995;
+    border-color: #81c99540;
+}
+[data-bs-theme="dark"] .badge-inactive {
+    background-color: #3c4043;
+    color: #bdc1c6;
+    border-color: #bdc1c640;
+}
+[data-bs-theme="dark"] .card {
+    border: 1px solid #3c4043 !important; /* Adds subtle borders to dark cards */
+}
+
 /* Utilities */
 .cursor-pointer {
     cursor: pointer;
@@ -90,7 +104,7 @@ th.sort-desc .sort-icon::before {
 .empty-state {
     padding: 4rem 1rem;
     text-align: center;
-    color: #6c757d;
+    color: var(--bs-secondary-color);
 }
 
 /* Responsive Overrides */

@@ -1,6 +1,6 @@
 /**
  * Greenwood Academy - Student Notes Management
- * Vanilla JS Application - Refactored for modularity, sorting, and filtering.
+ * Vanilla JS Application - Refactored for modularity, sorting, filtering, and Dark Mode.
  */
 
 // ==========================================
@@ -16,17 +16,23 @@ const State = {
         className: 'All'
     },
     sort: {
-        column: 'name',     // default sort by name
-        direction: 'asc'    // 'asc' or 'desc'
+        column: 'name',     
+        direction: 'asc'    
     }
 };
 
 const STORAGE_KEY = 'greenwoodStudentsData';
+const THEME_KEY = 'greenwoodThemePrefs'; // Database key for dark mode
 
 // ==========================================
 // 2. DOM ELEMENTS
 // ==========================================
 const DOM = {
+    // Theme
+    themeToggleBtn: document.getElementById('theme-toggle'),
+    themeIcon: document.getElementById('theme-icon'),
+    htmlElement: document.documentElement,
+
     // Form Elements
     form: document.getElementById('student-form'),
     formTitle: document.getElementById('form-title'),
@@ -71,6 +77,7 @@ const DOM = {
 // 3. INITIALIZATION & STORAGE
 // ==========================================
 const initApp = () => {
+    loadTheme();
     loadData();
     setupEventListeners();
     updateUI();
@@ -82,7 +89,7 @@ const loadData = () => {
         if (rawData) {
             State.students = JSON.parse(rawData);
             
-            // Migration for old data to ensure new fields exist
+            // Migration for old data
             State.students = State.students.map(s => ({
                 ...s,
                 status: s.status || 'Active',
@@ -101,7 +108,41 @@ const saveData = () => {
 };
 
 // ==========================================
-// 4. DATA PROCESSING (Filtering & Sorting)
+// 4. THEME MANAGEMENT (Dark/Light Mode)
+// ==========================================
+const loadTheme = () => {
+    // Check localStorage, default to light
+    const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+    applyTheme(savedTheme);
+};
+
+const applyTheme = (theme) => {
+    // Tell Bootstrap which theme to use
+    DOM.htmlElement.setAttribute('data-bs-theme', theme);
+    // Save preference to our "database"
+    localStorage.setItem(THEME_KEY, theme);
+
+    // Update the button visuals
+    if (theme === 'dark') {
+        DOM.themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+        DOM.themeToggleBtn.classList.replace('btn-outline-light', 'btn-warning');
+        DOM.themeIcon.classList.add('text-dark');
+    } else {
+        DOM.themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+        DOM.themeToggleBtn.classList.replace('btn-warning', 'btn-outline-light');
+        DOM.themeIcon.classList.remove('text-dark');
+    }
+};
+
+const toggleTheme = () => {
+    const currentTheme = DOM.htmlElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+};
+
+
+// ==========================================
+// 5. DATA PROCESSING (Filtering & Sorting)
 // ==========================================
 const getProcessedData = () => {
     // 1. Filter
@@ -127,7 +168,7 @@ const getProcessedData = () => {
 };
 
 // ==========================================
-// 5. RENDERING (UI Updates)
+// 6. RENDERING (UI Updates)
 // ==========================================
 const updateUI = () => {
     const dataToRender = getProcessedData();
@@ -154,7 +195,7 @@ const renderTable = (students) => {
     students.forEach(student => {
         const row = document.createElement('tr');
         
-        // Escape HTML to prevent injection
+        // Escape HTML
         const safeNotes = student.notes 
             ? student.notes.replace(/</g, '&lt;').replace(/>/g, '&gt;') 
             : '<em class="text-muted">No notes</em>';
@@ -164,7 +205,7 @@ const renderTable = (students) => {
 
         row.innerHTML = `
             <td class="fw-bold">${student.name}</td>
-            <td><span class="badge bg-light text-dark border">${student.rollNumber}</span></td>
+            <td><span class="badge bg-secondary-subtle text-secondary-emphasis border">${student.rollNumber}</span></td>
             <td>${student.className}</td>
             <td><span class="badge rounded-pill ${badgeClass}">${student.status}</span></td>
             <td class="text-muted small">${formattedDate}</td>
@@ -173,8 +214,8 @@ const renderTable = (students) => {
             </td>
             <td class="text-center pe-4">
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-light border edit-btn" data-id="${student.id}" title="Edit"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-light border text-danger delete-btn" data-id="${student.id}" title="Delete"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-outline-secondary edit-btn" data-id="${student.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-outline-danger delete-btn" data-id="${student.id}" title="Delete"><i class="bi bi-trash"></i></button>
                 </div>
             </td>
         `;
@@ -192,10 +233,7 @@ const renderStats = () => {
 };
 
 const populateClassDropdown = () => {
-    // Preserve current selection
     const currentSelection = DOM.filterClass.value;
-    
-    // Extract unique classes
     const uniqueClasses = [...new Set(State.students.map(s => s.className))].sort();
     
     DOM.filterClass.innerHTML = '<option value="All">All Classes</option>';
@@ -206,12 +244,11 @@ const populateClassDropdown = () => {
         DOM.filterClass.appendChild(option);
     });
 
-    // Re-apply selection if it still exists
     if (uniqueClasses.includes(currentSelection)) {
         DOM.filterClass.value = currentSelection;
     } else {
         DOM.filterClass.value = 'All';
-        State.filters.className = 'All'; // Sync state
+        State.filters.className = 'All'; 
     }
 };
 
@@ -225,16 +262,14 @@ const updateSortHeaders = () => {
 };
 
 // ==========================================
-// 6. VALIDATION & CRUD OPERATIONS
+// 7. VALIDATION & CRUD OPERATIONS
 // ==========================================
 const validateInput = (name, rollNumber) => {
     let isValid = true;
     
-    // Reset visual errors
     DOM.name.classList.remove('is-invalid');
     DOM.rollNumber.classList.remove('is-invalid');
 
-    // Case-insensitive duplicate name check (ignoring current edit)
     const isDupName = State.students.some(s => 
         s.name.toLowerCase() === name.toLowerCase() && s.id !== State.editId
     );
@@ -245,7 +280,6 @@ const validateInput = (name, rollNumber) => {
         isValid = false;
     }
 
-    // Case-insensitive duplicate ID check (ignoring current edit)
     const isDupRoll = State.students.some(s => 
         s.rollNumber.toLowerCase() === rollNumber.toLowerCase() && s.id !== State.editId
     );
@@ -262,13 +296,11 @@ const validateInput = (name, rollNumber) => {
 const handleFormSubmit = (e) => {
     e.preventDefault();
 
-    // Base HTML5 Validation
     if (!DOM.form.checkValidity()) {
         DOM.form.classList.add('was-validated');
         return;
     }
 
-    // Extract values
     const name = DOM.name.value.trim();
     const rollNumber = DOM.rollNumber.value.trim();
     const className = DOM.className.value.trim();
@@ -276,11 +308,9 @@ const handleFormSubmit = (e) => {
     const notes = DOM.notes.value.trim();
     const now = new Date().toISOString();
 
-    // Custom Duplicate Validation
     if (!validateInput(name, rollNumber)) return;
 
     if (State.editId) {
-        // Update
         const index = State.students.findIndex(s => s.id === State.editId);
         if (index > -1) {
             State.students[index] = {
@@ -291,7 +321,6 @@ const handleFormSubmit = (e) => {
             showToast('Student record updated successfully.', 'success');
         }
     } else {
-        // Create
         State.students.push({
             id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
             name, rollNumber, className, status, notes,
@@ -312,7 +341,6 @@ const handleEdit = (id) => {
 
     State.editId = student.id;
     
-    // Populate form
     DOM.name.value = student.name;
     DOM.rollNumber.value = student.rollNumber;
     DOM.className.value = student.className;
@@ -320,7 +348,6 @@ const handleEdit = (id) => {
     DOM.status.checked = (student.status === 'Active');
     DOM.statusLabel.textContent = student.status === 'Active' ? 'Active Student' : 'Inactive Student';
 
-    // Change UI state
     DOM.formTitle.textContent = 'Edit Student';
     DOM.submitBtn.innerHTML = '<i class="bi bi-save me-1"></i> Update Record';
     DOM.cancelBtn.classList.remove('d-none');
@@ -333,7 +360,6 @@ const confirmDelete = () => {
 
     State.students = State.students.filter(s => s.id !== State.deleteId);
     
-    // If the deleted student was being edited, reset form
     if (State.editId === State.deleteId) resetForm();
 
     saveData();
@@ -344,7 +370,7 @@ const confirmDelete = () => {
 };
 
 // ==========================================
-// 7. UTILITIES & EVENT LISTENERS
+// 8. UTILITIES & EVENT LISTENERS
 // ==========================================
 const resetForm = () => {
     DOM.form.reset();
@@ -368,6 +394,9 @@ const showToast = (message, colorTheme = 'primary') => {
 };
 
 const setupEventListeners = () => {
+    // Theme Toggle
+    DOM.themeToggleBtn.addEventListener('click', toggleTheme);
+
     // Form Events
     DOM.form.addEventListener('submit', handleFormSubmit);
     DOM.cancelBtn.addEventListener('click', resetForm);
@@ -413,10 +442,8 @@ const setupEventListeners = () => {
         th.addEventListener('click', () => {
             const column = th.dataset.sort;
             if (State.sort.column === column) {
-                // Toggle direction
                 State.sort.direction = State.sort.direction === 'asc' ? 'desc' : 'asc';
             } else {
-                // New column, default asc
                 State.sort.column = column;
                 State.sort.direction = 'asc';
             }
