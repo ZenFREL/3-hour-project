@@ -4,72 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Greenwood Academy - Student Notes</title>
+    <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons for modern UI touches -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-light">
 
-    <header class="bg-success text-white py-3 shadow-sm mb-4">
+    <!-- Header -->
+    <header class="bg-dark text-white py-3 shadow-sm mb-4">
         <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="h4 mb-0">Greenwood Academy – Student Notes</h1>
-            <span class="badge bg-light text-success fs-6">Total Students: <span id="total-count">0</span></span>
+            <h1 class="h4 mb-0"><i class="bi bi-journal-bookmark-fill me-2 text-success"></i>Greenwood Academy</h1>
+            <span class="text-muted fs-6">Student Notes Portal</span>
         </div>
     </header>
 
     <main class="container">
-        <div class="row g-4">
-            
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                        <h5 class="card-title mb-0" id="form-title">Add New Student</h5>
-                    </div>
+        
+        <!-- Statistics Row -->
+        <div class="row g-3 mb-4" id="stats-container">
+            <div class="col-md-4">
+                <div class="card stat-card border-0 shadow-sm border-start border-primary border-4 h-100">
                     <div class="card-body">
+                        <h6 class="text-muted fw-bold mb-1">Total Students</h6>
+                        <h2 class="mb-0 display-6 fw-bold" id="stat-total">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card border-0 shadow-sm border-start border-success border-4 h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted fw-bold mb-1">Active Students</h6>
+                        <h2 class="mb-0 display-6 fw-bold text-success" id="stat-active">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card border-0 shadow-sm border-start border-secondary border-4 h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted fw-bold mb-1">Inactive Students</h6>
+                        <h2 class="mb-0 display-6 fw-bold text-secondary" id="stat-inactive">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Left Column: Form -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <h5 class="card-title mb-0 fw-bold" id="form-title">Add New Student</h5>
+                    </div>
+                    <div class="card-body pt-3">
                         <form id="student-form" novalidate>
                             <input type="hidden" id="internal-id">
                             
+                            <!-- Status Toggle -->
+                            <div class="mb-3 form-check form-switch fs-5">
+                                <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="student-status" checked>
+                                <label class="form-check-label fs-6 mt-1" for="student-status" id="status-label">Active Student</label>
+                            </div>
+
                             <div class="mb-3">
-                                <label for="student-name" class="form-label">Student Name <span class="text-danger">*</span></label>
+                                <label for="student-name" class="form-label fw-medium">Student Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="student-name" placeholder="e.g. Jane Doe" required>
-                                <div class="invalid-feedback">Please enter a student name.</div>
+                                <div class="invalid-feedback" id="name-feedback">Please enter a unique student name.</div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="roll-number" class="form-label">Student ID / Roll No. <span class="text-danger">*</span></label>
+                                <label for="roll-number" class="form-label fw-medium">Student ID / Roll No. <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="roll-number" placeholder="e.g. GA-1024" required>
                                 <div class="invalid-feedback" id="roll-feedback">Please enter a unique student ID.</div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="student-class" class="form-label">Class / Grade <span class="text-danger">*</span></label>
+                                <label for="student-class" class="form-label fw-medium">Class / Course <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="student-class" placeholder="e.g. 10th Grade" required>
-                                <div class="invalid-feedback">Please enter the class/grade.</div>
+                                <div class="invalid-feedback">Please enter the class/course.</div>
                             </div>
                             
                             <div class="mb-4">
-                                <label for="student-notes" class="form-label">Notes / Comments</label>
+                                <label for="student-notes" class="form-label fw-medium">Notes / Comments</label>
                                 <textarea class="form-control" id="student-notes" rows="4" placeholder="Enter behavioral or academic notes..."></textarea>
                             </div>
                             
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-success" id="submit-btn">Save Student</button>
-                                <button type="button" class="btn btn-outline-secondary d-none" id="cancel-edit-btn">Cancel Edit</button>
+                            <div class="d-flex flex-column gap-2">
+                                <button type="submit" class="btn btn-primary" id="submit-btn"><i class="bi bi-save me-1"></i> Save Student</button>
+                                <button type="button" class="btn btn-light d-none" id="cancel-edit-btn">Cancel Edit</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
+            <!-- Right Column: Student List & Controls -->
             <div class="col-lg-8">
                 <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white border-bottom-0 pt-4 pb-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <h5 class="card-title mb-0">Student Directory</h5>
-                        
-                        <div class="input-group search-group" style="max-width: 350px;">
-                            <input type="text" id="search-input" class="form-control" placeholder="Search by name..." aria-label="Search by name">
-                            <button class="btn btn-outline-secondary" type="button" id="clear-search-btn" title="Clear Search">
-                                &times;
-                            </button>
+                    <div class="card-header bg-white border-bottom pt-3 pb-3">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-4">
+                                <h5 class="card-title mb-0 fw-bold">Student Directory</h5>
+                            </div>
+                            <!-- Filters -->
+                            <div class="col-md-8">
+                                <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                                    <input type="text" id="filter-search" class="form-control form-control-sm" placeholder="Search name..." style="max-width: 200px;">
+                                    <select id="filter-status" class="form-select form-select-sm" style="max-width: 140px;">
+                                        <option value="All">All Status</option>
+                                        <option value="Active">Active Only</option>
+                                        <option value="Inactive">Inactive Only</option>
+                                    </select>
+                                    <select id="filter-class" class="form-select form-select-sm" style="max-width: 150px;">
+                                        <option value="All">All Classes</option>
+                                        <!-- Dynamically populated -->
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -78,55 +131,66 @@
                             <table class="table table-hover align-middle mb-0" id="students-table">
                                 <thead class="table-light">
                                     <tr>
-                                        <th scope="col" class="ps-4">#</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Student ID</th>
-                                        <th scope="col">Class</th>
+                                        <!-- Sortable Headers -->
+                                        <th scope="col" class="ps-4 sortable" data-sort="name">
+                                            Name <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th scope="col">ID</th>
+                                        <th scope="col" class="sortable" data-sort="className">
+                                            Class <i class="bi bi-arrow-down-up sort-icon"></i>
+                                        </th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Created</th>
                                         <th scope="col" class="notes-col">Notes</th>
                                         <th scope="col" class="text-center pe-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-body">
-                                    </tbody>
+                                    <!-- Dynamic rows injected here by JS -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content border-0 shadow">
                 <div class="modal-header border-bottom-0">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-0">
-                    Are you sure you want to delete the record for <strong id="delete-student-name"></strong>? This action cannot be undone.
+                <div class="modal-body py-2 fs-5">
+                    Delete record for <strong id="delete-student-name"></strong>?
+                    <p class="text-muted fs-6 mt-2 mb-0">This action cannot be undone.</p>
                 </div>
-                <div class="modal-footer border-top-0 mt-2">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" id="confirm-delete-btn">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="action-toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="action-toast" class="toast align-items-center text-white border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body" id="toast-message">
-                    Action completed successfully.
+                <div class="toast-body fw-medium" id="toast-message">
+                    Action completed.
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,47 +1,106 @@
-/* Base Layout Tweaks */
+/* Custom Font & Base Styling */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
-    min-height: 100vh;
-    padding-bottom: 2rem;
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f6; /* Softer light gray */
+    color: #333;
 }
 
-/* Table Specific Styling */
+/* Card Enhancements */
+.card {
+    border-radius: 0.75rem;
+    transition: all 0.2s ease-in-out;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Table Styling */
+.table {
+    margin-bottom: 0;
+}
 .table th, .table td {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 1rem;
+}
+.table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
 }
 
-/* Fix width for notes column to allow truncation */
+/* Sortable Headers */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+th.sortable:hover {
+    background-color: #e9ecef;
+}
+.sort-icon {
+    font-size: 0.8rem;
+    opacity: 0.3;
+    margin-left: 4px;
+}
+th.sort-asc .sort-icon {
+    opacity: 1;
+}
+th.sort-asc .sort-icon::before {
+    content: "\F148"; /* bi-arrow-up */
+}
+th.sort-desc .sort-icon {
+    opacity: 1;
+}
+th.sort-desc .sort-icon::before {
+    content: "\F128"; /* bi-arrow-down */
+}
+
+/* Notes Truncation */
 .notes-col {
-    width: 30%; 
-    max-width: 250px;
+    width: 25%;
 }
-
 .note-truncate {
     display: inline-block;
-    max-width: 250px;
+    max-width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
-    cursor: help; /* Indicates a tooltip is present */
+    cursor: help;
 }
 
-/* Custom Empty State styling */
+/* Status Badges */
+.badge-active {
+    background-color: #e6f4ea;
+    color: #1e8e3e;
+    border: 1px solid #1e8e3e40;
+}
+.badge-inactive {
+    background-color: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #5f636840;
+}
+
+/* Utilities */
+.cursor-pointer {
+    cursor: pointer;
+}
 .empty-state {
-    padding: 3rem 1rem;
+    padding: 4rem 1rem;
     text-align: center;
     color: #6c757d;
 }
 
-/* Responsive tweaks for smaller screens */
+/* Responsive Overrides */
 @media (max-width: 992px) {
     .note-truncate {
-        max-width: 150px;
+        max-width: 120px;
     }
 }
-
 @media (max-width: 768px) {
-    .note-truncate {
-        max-width: 120px;
+    .stat-card {
+        margin-bottom: 0.5rem;
     }
 }
